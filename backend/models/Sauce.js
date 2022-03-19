@@ -28,5 +28,6 @@ const sauceSchema = mongoose.Schema({
   });
 
 
-//on exporte le schéma de données
+//on exporte le schéma de données en tant que modèle mongoose appelé Sauce , le rendant ainsi disponible
+//pour notre application Express
 module.exports = mongoose.model('Sauce', sauceSchema);
