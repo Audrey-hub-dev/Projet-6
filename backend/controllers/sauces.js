@@ -1,10 +1,15 @@
 const Sauce = require('../models/Sauce'); 
 
+//pour pouvoir accéder au système de fichiers, on importe fs de node et avoir
+// accès aux différentes opérations liées aux fichiers
+const fs = require ('fs'); 
+
 
 
 //on exporte la logique de création d'une sauce 
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce); 
+    //suppression de l'id généré automatiquement par mongodb
     delete sauceObject._id;
     const sauce = new Sauce({
         ...sauceObject,
@@ -19,16 +24,15 @@ exports.createSauce = (req, res, next) => {
 // on exporte la logique de modification d'une sauce
 exports.modifySauce = (req, res, next) => {
     const sauceObject = req.file ?
+    //si le fichier req.file existe 
     {
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        ...JSON.parse(req.body.sauce),//récupération des informations de l'objet sur cette partie de la requête
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`//on génère une nouvelle image
 
-    } : {...req.body};
+    } : {...req.body};//si le fichier req.file n'existe pas 
 
-
-    /*updateOne permet de mettre à jour le Thing qui correspond à l'objet que nous 
-    passons comme premier argument. Nous utilisons le paramètre id passé dans la demande et le 
-    remplaçons par le Thing passé comme second argument.
+    /*updateOne permet de mettre à jour la modification peu importe son format et on met à jour
+    l'identifiant de la sauce correspondant aux paramètres des requêtes
     */
     Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
       .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
@@ -38,7 +42,7 @@ exports.modifySauce = (req, res, next) => {
 //on exporte la logique de suppression d'une sauce
 exports.deleteSauce = (req, res, next) => {
     //accéder au fichier
-    Sauce.findOne({_id: req.params.id})
+    Sauce.findOne({_id: req.params.id})//id qui correspond aux paramètres de la requête
         //récupérer le nom du fichier précisément
         .then(sauce => {
             const filename = sauce.imageUrl.split('/images/')[1/*on récupère le nom du fichier ce qui 
