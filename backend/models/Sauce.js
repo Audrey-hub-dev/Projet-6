@@ -1,3 +1,8 @@
+/**
+ * Ce fichier est la construction d'un schéma de type mongoose qui apparaîtra dans la base de données
+ * de mongodb.
+ */
+
 const mongoose = require('mongoose');
 
 //création d'un schéma de données qui contient les chmaps souhaités pour chaque sauce

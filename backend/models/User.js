@@ -1,3 +1,10 @@
+/**
+ * Ce fichier est la construction d'un schéma de type mongoose pour les utilisateurs qui 
+ * apparaitra dans la base de données de mongodb. 
+ */
+
+
+
 //On importe mongoose
 const mongoose = require('mongoose');
 
