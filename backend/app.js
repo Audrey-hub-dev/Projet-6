@@ -1,3 +1,9 @@
+/**
+ * Ce fichier est l'application utilisant Express, il permet de donner suite aux requêtes envoyées 
+ * par le frontend. 
+ */
+
+
 const express = require('express');
 const app = express();
 
