@@ -1,4 +1,7 @@
-/*middleware d'authentification*/
+/**
+ * Ce fichier est le middleware d'authentification, il permet la création de routes en toute
+ * sécurité. 
+ */
 
 //utilisation du package jwt pour vérifier les token
 const jwt = require('jsonwebtoken');

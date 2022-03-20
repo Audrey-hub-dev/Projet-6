@@ -1,6 +1,8 @@
-/* fichier de création d'un middleware qui va configurer multer
-pour lui expliquer la manière de gérer les fichiers, les enregistrer
-et les nommer*/
+/**
+ * Fichier du middleware multer qui explique à multer la manière de gérer les fichiers entrants, les 
+ * enregistrer et les nommer. 
+ */
+
 
 //importation de multer 
 const multer = require('multer');
