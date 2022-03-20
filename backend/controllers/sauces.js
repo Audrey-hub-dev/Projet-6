@@ -1,3 +1,9 @@
+/**
+ * Ce fichier permet à un utilisateur de créer une sauce, de modifier sa sauce, de supprimer une sauce, et d'obtenir
+ * toutes ces sauces. 
+ */
+
+
 const Sauce = require('../models/Sauce'); 
 
 //pour pouvoir accéder au système de fichiers, on importe fs de node et avoir

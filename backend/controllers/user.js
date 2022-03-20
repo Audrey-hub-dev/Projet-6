@@ -1,3 +1,8 @@
+/**
+ * Ce fichier permet à un utilisateur de créer un compte et de se connecter à celui-ci 
+ */
+
+
 //importation du package bcrypt 
 const bcrypt = require('bcrypt');
 
@@ -12,6 +17,12 @@ const User = require('../models/User');
 //fonction signup qui va crypter le mot de passe, va prendre ce mot de passe crypté et crée un nouveau user
 //avec ce mot de passe crypté et l'adresse mail passé dans le corps de la requête
 // et va enregistrer cet utilisateur dans la base de données
+/**
+ * Fonction signup : sert à créer un compte. Utilise la 
+ * @param {*} req requete
+ * @param {*} res reponse
+ * @param {*} next pas utilisé
+ */
 exports.signup = (req, res, next) => {
     //hachage du mot de passe
     bcrypt.hash(req.body.password, 10 /*combien de fois on exécute l'algorithme
