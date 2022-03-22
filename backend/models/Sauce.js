@@ -1,5 +1,5 @@
 /**
- * Ce fichier est la construction d'un schéma de type mongoose qui apparaîtra dans la base de données
+ * Ce fichier est la construction d'un schéma de type mongoose pour les sauces qui apparaîtra dans la base de données
  * de mongodb.
  */
 
@@ -26,9 +26,9 @@ const sauceSchema = mongoose.Schema({
   //nombre d'utilisateurs qui n'aiment pas la sauce
   dislikes : { type: Number },
   //tableau des identifiants des utilisateurs qui ont aimé la sauce 
-  usersLiked : { type: ["String <userId>"] },
+  usersLiked : { type: [String]},
   //tableau des identifiants des utilisateurs qui n'ont pas aimé la sauce 
-  usersDisliked : { type: ["String <userId>"] },
+  usersDisliked : { type: [String]}
   
   });
 
