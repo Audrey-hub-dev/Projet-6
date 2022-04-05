@@ -28,9 +28,14 @@ mongoose.connect('mongodb+srv://audreyv:paris@cluster0.flvp6.mongodb.net/Cluster
 
 //gestion des CORS pour que le frontend et le backend puissent communiquer entre eux
 app.use((req, res, next) => {
+  //les ressources peuvent être partagées depuis n'importe quelle origine
   res.setHeader('Access-Control-Allow-Origin', '*');
+  //les en-têtes qui seront utilisés après la pré-vérification cross-origin pour donner l'autorisation
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+  //les méthodes autorisées pour les requêtes HTTP
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  //autorisation du serveur à envoyer des scripts pour la page visitée
+  res.setHeader('Content-Security-Policy', "default-src 'self'");
   next();
 });
 
