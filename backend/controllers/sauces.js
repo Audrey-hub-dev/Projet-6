@@ -9,6 +9,7 @@ const Sauce = require('../models/Sauce');
 //pour pouvoir accéder au système de fichiers, on importe fs de node et avoir
 // accès aux différentes opérations liées aux fichiers
 const fs = require ('fs'); 
+const { JsonWebTokenError } = require('jsonwebtoken');
 
 
 
@@ -18,6 +19,7 @@ exports.createSauce = (req, res, next) => {
     //suppression de l'id généré automatiquement par mongodb
     delete sauceObject._id;
     const sauce = new Sauce({
+        //opérateur spread (...) copie les champs de la requête et détaille les éléments
         ...sauceObject,
         //url de l'image: protocole, nom d'hôte, dossier, nom du fichier
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -27,30 +29,74 @@ exports.createSauce = (req, res, next) => {
         .catch(error => res.status(400).json({error}));
 };
 
+
+
+
+
 // on exporte la logique de modification d'une sauce
 exports.modifySauce = (req, res, next) => {
-    const sauceObject = req.file ?
-    //si le fichier req.file existe 
-    {
-        ...JSON.parse(req.body.sauce),//récupération des informations de l'objet sur cette partie de la requête
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`//on génère une nouvelle image
+    //accéder au fichier
+    Sauce.findOne({_id: req.params.id})
+    .then((sauce) => {      
+        //si la sauce n'existe pas 
+        if(!sauce) {
+            return res.status(404).json({
+                error: new Error('sauce non trouvée !')
+            })
+        }
+        //contrôle du userId si autorisé à modifier l'objet en comparant l'userId qui a crée
+        //la sauce et l'userId qui veut modifier la sauce
+        if(sauce.userId !== req.auth.userId) {
+            return res.status(403).json({
+                error: new Error('requête non autorisée !')
+            })       
+        }
+        
+        const sauceObject = req.file ?
+        //si le fichier req.file existe 
+        {
 
-    } : {...req.body};//si le fichier req.file n'existe pas 
+            
+            ...JSON.parse(req.body.sauce),//récupération des informations de l'objet sur cette partie de la requête
+            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`//on génère une nouvelle image
+        
+        } : 
+        //si le fichier req.file n'existe pas 
+        {...req.body};
+        /*updateOne permet de mettre à jour la modification peu importe son format et on met à jour
+            l'identifiant de la sauce correspondant aux paramètres des requêtes
+        */
 
-    /*updateOne permet de mettre à jour la modification peu importe son format et on met à jour
-    l'identifiant de la sauce correspondant aux paramètres des requêtes
-    */
-    Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-      .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
-      .catch(error => res.status(400).json({ error }));
-  }; 
+        Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+                .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
+                .catch(error => res.status(400).json({ error }));
+            })
+
+    .catch(error => res.status(400).json({error}));
+
+}; 
+
+
 
 //on exporte la logique de suppression d'une sauce
 exports.deleteSauce = (req, res, next) => {
     //accéder au fichier
     Sauce.findOne({_id: req.params.id})//id qui correspond aux paramètres de la requête
         //récupérer le nom du fichier précisément
-        .then(sauce => {
+        .then((sauce) => {
+        
+            if (!sauce) {
+                return res.status(404).json({
+                    error: new Error('Sauce non trouvée !')
+                });
+            }
+
+            if (sauce.userId !== req.auth.userId) {
+                return res.status(403).json({
+                    error: new Error('Requête non autorisée!')
+                });
+            }
+
             const filename = sauce.imageUrl.split('/images/')[1/*on récupère le nom du fichier ce qui 
             vient après le dossier images donc le deuxième élément. Le premier élément
             est ce qui vient avant le dossier images*/];
@@ -67,11 +113,12 @@ exports.deleteSauce = (req, res, next) => {
             })
 
         })
-        .catch(error => res.status(500).json({error})); 
+        .catch(error => res.status(500).json({error}));
 }; 
 
+        
 
-  //on exporte la logique de récupération d'une seule sauce
+//on exporte la logique de récupération d'une seule sauce
 exports.getOneSauce = (req, res, next) => {
     //findOne pour trouver un seul objet et pas tous
     //trouver le Thing unique ayant le même id que le paramètre de la requête
