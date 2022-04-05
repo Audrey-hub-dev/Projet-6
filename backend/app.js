@@ -22,14 +22,19 @@ const mongoose = require('mongoose');
 //importation de path pour utiliser le dossier images
 const path = require('path');
 
+
 const saucesRoutes = require('./routes/sauces'); 
 //importation du fichier user.js du dossier routes afin par la suite d'enregistrer les routes 
 const userRoutes = require('./routes/user');
 
-// connexion à mongoDB
-mongoose.connect('mongodb+srv://audreyv:paris@cluster0.flvp6.mongodb.net/Cluster0?retryWrites=true&w=majority' , 
+//utilisation du module 'dotenv' pour masquer les informations de connexion à la base de données à l'aide de variables d'environnement
+require('dotenv').config()
+//console.log(process.env)
 
-  { useNewUrlParser: true,
+// connexion à mongoDB
+mongoose.connect(process.env.MONGO_URI,
+  {
+    useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
