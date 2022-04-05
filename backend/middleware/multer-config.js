@@ -21,7 +21,7 @@ const MIME_TYPES = {
 const storage = multer.diskStorage({
      //premier argument qui indique à multer d'enregistrer les fichiers dans le dossier images
     destination: (req, file, callback)=> {
-        callback(null, 'images')
+        callback(null/* pas d'erreur*/, 'images')
     },
     //deuxième argument indique à multer d'utiliser le nom d'origine, de remplacer les espaces par des underscores et 
     //d'ajouter un timestamp Date.now() comme nom de fichier. Elle utilise 
