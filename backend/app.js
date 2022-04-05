@@ -15,6 +15,28 @@ const app = express();
 
 app.use(helmet());
 
+//utilisation de express-session pour sécuriser la session 
+const session = require('express-session');
+app.set('trust proxy', 1) // trust first proxy
+
+
+//utilisation de cookie-session pour sécuriser les cookies de session 
+const cookieSession = require('cookie-session');
+
+const expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
+app.use(cookieSession({
+  name: 'session',
+  secret: 'keyboard cat',
+  keys: ['key1', 'key2'],
+  cookie: { secure: true,
+            httpOnly: true,
+            domain: 'http://localhost:3000',
+            path: 'foo/bar',
+            expires: expiryDate
+          }
+  })
+);
+
 
 //importation mongoose 
 const mongoose = require('mongoose');
@@ -50,6 +72,8 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   //autorisation du serveur à envoyer des scripts pour la page visitée
   res.setHeader('Content-Security-Policy', "default-src 'self'");
+  //ajout sécurité httpOnly pour les cookies
+  res.setHeader('Set-Cookie', 'foo=bar; HttpOnly');
   next();
 });
 
