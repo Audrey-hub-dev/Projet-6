@@ -5,7 +5,16 @@
 
 
 const express = require('express');
+
+//utilisation du module 'helmet' pour la sécurité en protégeant l'application de certaines vulnérabilités
+// il sécurise nos requêtes HTTP, sécurise les en-têtes, contrôle la prélecture DNS du navigateur, empêche le détournement de clics
+// et ajoute une protection XSS mineure 
+const helmet = require('helmet');
+
 const app = express();
+
+app.use(helmet());
+
 
 //importation mongoose 
 const mongoose = require('mongoose');
