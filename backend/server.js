@@ -4,21 +4,6 @@ const http = require('http');
 //importation du fichier app.js
 const app = require('./app');
 
-//utilisation du package cookie-httpOnly pour sécuriser les cookies 
-const Cookie = require('cookie-httponly');
- 
-http.createServer((req, res) => {
-  const cookie = new Cookie(req, res);
-  
-  cookie.set('user', '', {
-    expires: new Date(0) // Thu, 01 Jan 1970 00:00:00 GMT
-    });
-   
-  res.end();
-})
-.listen(8080);
-
-
 //fonction qui renvoie un port valide qu'il soit fourni sous la forme d'un numéro ou d'une chaine.
 const normalizePort = val => {
     const port = parseInt(val, 10);
@@ -68,6 +53,7 @@ Cette fonction reçoit les objets request et response en tant qu'arguments.
 On utilise la méthode end de la réponse pour renvoyer une réponse de type string à l'appelant. 
 */
 const server = http.createServer(app);
+
 
 server.on('error', errorHandler);
 server.on('listening', () => {
