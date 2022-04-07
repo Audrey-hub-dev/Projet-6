@@ -6,36 +6,36 @@
 
 const express = require('express');
 
+const app = express();
+
+
 //utilisation du module 'helmet' pour la sécurité en protégeant l'application de certaines vulnérabilités
 // il sécurise nos requêtes HTTP, sécurise les en-têtes, contrôle la prélecture DNS du navigateur, empêche le détournement de clics
 // et ajoute une protection XSS mineure 
 const helmet = require('helmet');
-
-const app = express();
-
 app.use(helmet());
 
-//utilisation de express-session pour sécuriser la session 
-const session = require('express-session');
-app.set('trust proxy', 1) // trust first proxy
+app.use(helmet.hidePoweredBy());
+app.use(helmet.contentSecurityPolicy());
+app.use(helmet.hsts());
+app.use(helmet.ieNoOpen());
+app.use(helmet.noSniff());
+app.use(helmet.frameguard());
+app.use(helmet.xssFilter()); 
 
 
 //utilisation de cookie-session pour sécuriser les cookies de session 
 const cookieSession = require('cookie-session');
 
-const expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
 app.use(cookieSession({
   name: 'session',
-  secret: 'keyboard cat',
-  keys: ['key1', 'key2'],
-  cookie: { secure: true,
-            httpOnly: true,
-            domain: 'http://localhost:3000',
-            path: 'foo/bar',
-            expires: expiryDate
-          }
-  })
-);
+  keys: [0],
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  secure: true,
+  httpOnly: true
+
+}));
 
 
 //importation mongoose 
@@ -48,6 +48,9 @@ const path = require('path');
 const saucesRoutes = require('./routes/sauces'); 
 //importation du fichier user.js du dossier routes afin par la suite d'enregistrer les routes 
 const userRoutes = require('./routes/user');
+
+
+
 
 //utilisation du module 'dotenv' pour masquer les informations de connexion à la base de données à l'aide de variables d'environnement
 require('dotenv').config()
@@ -72,10 +75,16 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   //autorisation du serveur à envoyer des scripts pour la page visitée
   res.setHeader('Content-Security-Policy', "default-src 'self'");
-  //ajout sécurité httpOnly pour les cookies
-  res.setHeader('Set-Cookie', 'foo=bar; HttpOnly');
+  //ajout sécurité httpOnly et secure pour les cookies
+  res.setHeader('Set-Cookie', ["__Secure-cookie = cookie; Expires-Sat, 15 May 2022 20:00:00 GMT;\
+  Domain=127.0.0.1; HttpOnly; Secure; Max-Age = 3600"]); 
+  //pour permettre l'affichage des images avec Helmet 
+  res.setHeader('Cross-Origin-Resource-Policy', "cross-origin"); 
+  //filtrage activé, le navigateur bloque le rendu de la page si une tentative d'ataque XSS est détectée
+  res.setHeader('X-XSS-Protection', "1; mode-block"); 
   next();
 });
+
 
 
 //pour analyser le corps de la requête 
